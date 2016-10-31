@@ -91,10 +91,11 @@ static void HEARTBEAT_cb(uv_timer_t * handle)
         }
         log_debug("Series with overlap: %lu", tcount);
         log_debug("Active tasks: %u (inserts: %u, queries: %u)",
-        		siridb->active_tasks,
+        		siridb->tasks.active,
 				siridb->insert_tasks,
-				siridb->active_tasks - siridb->insert_tasks);
+				siridb->tasks.active - siridb->insert_tasks);
         log_debug("Max series id: %lu", siridb->max_series_id);
+        log_debug("Idle time: %.3lf seconds", siridb->tasks.idle_time);
 
 #endif
 

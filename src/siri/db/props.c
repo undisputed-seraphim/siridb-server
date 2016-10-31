@@ -65,6 +65,10 @@ static void prop_duration_num(
         siridb_t * siridb,
         qp_packer_t * packer,
         int map);
+static void prop_idle_time(
+        siridb_t * siridb,
+        qp_packer_t * packer,
+        int map);
 static void prop_ip_support(
         siridb_t * siridb,
         qp_packer_t * packer,
@@ -165,6 +169,8 @@ void siridb_init_props(void)
             prop_duration_log;
     siridb_props[CLERI_GID_K_DURATION_NUM - KW_OFFSET] =
             prop_duration_num;
+    siridb_props[CLERI_GID_K_IDLE_TIME - KW_OFFSET] =
+            prop_idle_time;
     siridb_props[CLERI_GID_K_IP_SUPPORT - KW_OFFSET] =
     		prop_ip_support;
     siridb_props[CLERI_GID_K_LIBUV - KW_OFFSET] =
@@ -275,6 +281,15 @@ static void prop_duration_num(
 {
     SIRIDB_PROP_MAP("duration_num", 12)
     qp_add_int64(packer, (int64_t) siridb->duration_num);
+}
+
+static void prop_idle_time(
+        siridb_t * siridb,
+        qp_packer_t * packer,
+        int map)
+{
+	SIRIDB_PROP_MAP("idle_time", 9)
+	qp_add_int32(packer, (int32_t) siridb->tasks.idle_time);
 }
 
 static void prop_ip_support(

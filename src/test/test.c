@@ -896,7 +896,7 @@ int test_strx_to_double(void)
 
 int run_tests(int flags)
 {
-    timeit_t start;
+	struct timespec start;
     timeit_start(&start);
     int rc = 0;
     rc += test_qpack();

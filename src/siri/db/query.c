@@ -31,6 +31,7 @@
 #include <string.h>
 #include <sys/time.h>
 #include <siri/err.h>
+#include <timeit/timeit.h>
 
 #ifndef DEBUG
 #include <math.h>
@@ -71,6 +72,8 @@ void siridb_query_run(
         siridb_timep_t time_precision,
         int flags)
 {
+	siridb_t * siridb;
+
     uv_async_t * handle = (uv_async_t *) malloc(sizeof(uv_async_t));
     if (handle == NULL)
     {
@@ -95,7 +98,7 @@ void siridb_query_run(
     }
 
     /* set start time */
-    clock_gettime(CLOCK_REALTIME, &query->start);
+    clock_gettime(CLOCK_MONOTONIC, &query->start);
 
     /* bind pid, client and flags so we can send back the result */
     query->pid = pid;
@@ -129,8 +132,9 @@ void siridb_query_run(
     	log_debug("Parsing query (%d): %s", query->flags, query->q);
     }
 
+    siridb = ((sirinet_socket_t *) query->client->data)->siridb;
     /* increment active tasks */
-    ((sirinet_socket_t *) query->client->data)->siridb->active_tasks++;
+    siridb_tasks_inc(siridb->tasks);
 
     /* send next call */
     uv_async_init(siri.loop, handle, (uv_async_cb) QUERY_parse);
@@ -141,9 +145,10 @@ void siridb_query_run(
 void siridb_query_free(uv_handle_t * handle)
 {
     siridb_query_t * query = (siridb_query_t *) handle->data;
+    siridb_t * siridb = ((sirinet_socket_t *) query->client->data)->siridb;
 
     /* decrement active tasks */
-    ((sirinet_socket_t *) query->client->data)->siridb->active_tasks--;
+    siridb_tasks_dec(siridb->tasks);
 
     /* free query */
     free(query->q);

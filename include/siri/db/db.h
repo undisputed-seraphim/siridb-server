@@ -28,6 +28,7 @@
 #include <siri/db/replicate.h>
 #include <siri/db/reindex.h>
 #include <siri/db/groups.h>
+#include <siri/db/tasks.h>
 
 #define SIRIDB_MAX_SIZE_ERR_MSG 1024
 #define SIRIDB_MAX_DBNAME_LEN 256  // 255 + NULL
@@ -66,6 +67,7 @@ typedef struct siridb_fifo_s siridb_fifo_t;
 typedef struct siridb_replicate_s siridb_replicate_t;
 typedef struct siridb_reindex_s siridb_reindex_t;
 typedef struct siridb_groups_s siridb_groups_t;
+typedef struct siridb_tasks_s siridb_tasks_t;
 
 typedef struct siridb_s
 {
@@ -73,7 +75,6 @@ typedef struct siridb_s
     uint8_t flags;
     uint8_t pad0;
     uint32_t max_series_id;
-    uint16_t active_tasks;
     uint16_t insert_tasks;
     uint16_t shard_mask_num;
     uint16_t shard_mask_log;
@@ -108,6 +109,7 @@ typedef struct siridb_s
     siridb_replicate_t * replicate;
     siridb_reindex_t * reindex;
     siridb_groups_t * groups;
+    siridb_tasks_t tasks;
 } siridb_t;
 
 int siridb_is_db_path(const char * dbpath);
@@ -127,3 +129,4 @@ void siridb__free(siridb_t * siridb);
 #define siridb_decref(_siridb) if (!--_siridb->ref) siridb__free(_siridb)
 
 #define siridb_is_reindexing(siridb) (siridb->flags & SIRIDB_FLAG_REINDEXING)
+

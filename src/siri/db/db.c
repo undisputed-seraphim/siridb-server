@@ -309,6 +309,8 @@ siridb_t * siridb_new(const char * dbpath, int lock_flags)
     /* start groups update thread */
     siridb_groups_start(siridb->groups);
 
+    siridb_tasks_init(&siridb->tasks);
+
     log_info("Finished loading database: '%s'", siridb->dbname);
 
     return siridb;
@@ -697,7 +699,6 @@ static siridb_t * SIRIDB_new(void)
                     siridb->dbname = NULL;
                     siridb->dbpath = NULL;
                     siridb->ref = 1;
-                    siridb->active_tasks = 0;
                     siridb->insert_tasks = 0;
                     siridb->flags = 0;
                     siridb->buffer_path = NULL;

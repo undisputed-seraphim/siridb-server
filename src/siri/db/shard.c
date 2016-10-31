@@ -270,6 +270,14 @@ siridb_shard_t *  siridb_shard_create(
     shard->flags = SIRIDB_SHARD_OK;
     shard->tp = tp;
     shard->replacing = replacing;
+
+    /*
+     * Its probably fine to use the default when this size is greater than the
+     * original shard chunk size. A smaller chunk size when replacing a shard
+     * is not allowed since this lead to trouble when re-creating the index
+     * during the optimize task.
+     * (we now simple keep the original size, no matter what)
+     */
     shard->max_chunk_sz = (replacing == NULL) ?
             DEFAULT_MAX_CHUNK_SZ_NUM : replacing->max_chunk_sz;
 
@@ -840,9 +848,9 @@ int siridb_shard_optimize(siridb_shard_t * shard, siridb_t * siridb)
 
             uv_mutex_unlock(&siridb->series_mutex);
 
-            /* make this sleep depending on the active_tasks
+            /* make this sleep depending on the active tasks
              * (50ms per active task) */
-            usleep( 50000 * siridb->active_tasks + 100 );
+            usleep( 50000 * siridb->tasks.active + 100 );
         }
 
         siridb_series_decref(series);

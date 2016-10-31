@@ -82,6 +82,7 @@ class SiriGrammar(Grammar):
     k_group = Keyword('group')
     k_groups = Keyword('groups')
     k_help = Choice(Keyword('help'), Token('?'))
+    k_idle_time = Keyword('idle_time')
     k_info = Keyword('info')
     k_ignore_threshold = Keyword('ignore_threshold')
     k_insert = Keyword('insert')
@@ -250,6 +251,7 @@ class SiriGrammar(Grammar):
         k_status,
         # Remote properties
         k_active_handles,
+        k_idle_time,
         k_log_level,
         k_max_open_files,
         k_mem_usage,
@@ -312,6 +314,7 @@ class SiriGrammar(Grammar):
         Sequence(Choice(
             k_active_handles,
             k_buffer_size,
+            k_idle_time,
             k_port,
             k_pool,
             k_startup_time,
@@ -640,6 +643,7 @@ class SiriGrammar(Grammar):
         k_drop_threshold,
         k_duration_log,
         k_duration_num,
+        k_idle_time,
         k_ip_support,
         k_libuv,
         k_log_level,

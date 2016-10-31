@@ -35,6 +35,7 @@ C_SRCS += \
 ../src/siri/db/servers.c \
 ../src/siri/db/shard.c \
 ../src/siri/db/shards.c \
+../src/siri/db/tasks.c \
 ../src/siri/db/time.c \
 ../src/siri/db/user.c \
 ../src/siri/db/users.c \
@@ -73,6 +74,7 @@ OBJS += \
 ./src/siri/db/servers.o \
 ./src/siri/db/shard.o \
 ./src/siri/db/shards.o \
+./src/siri/db/tasks.o \
 ./src/siri/db/time.o \
 ./src/siri/db/user.o \
 ./src/siri/db/users.o \
@@ -111,6 +113,7 @@ C_DEPS += \
 ./src/siri/db/servers.d \
 ./src/siri/db/shard.d \
 ./src/siri/db/shards.d \
+./src/siri/db/tasks.d \
 ./src/siri/db/time.d \
 ./src/siri/db/user.d \
 ./src/siri/db/users.d \
