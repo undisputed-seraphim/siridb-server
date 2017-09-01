@@ -9,7 +9,7 @@
  *  - initial version, 31-07-2016
  *
  */
-#include <qpack/qpack.h>
+#include <qpextra/qpack.h>
 #include <siri/async.h>
 #include <siri/db/forward.h>
 #include <siri/err.h>

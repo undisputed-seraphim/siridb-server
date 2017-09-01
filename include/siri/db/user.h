@@ -11,11 +11,11 @@
  */
 #pragma once
 
-#include <qpack/qpack.h>
 #include <inttypes.h>
 #include <siri/db/db.h>
 #include <siri/db/access.h>
 #include <cexpr/cexpr.h>
+#include "../../qpextra/qpack.h"
 
 typedef struct siridb_s siridb_t;
 

@@ -1,3 +1,4 @@
+
 /*
  * initsync.c - Initial replica synchronization
  *
@@ -22,7 +23,7 @@
 #include <stdio.h>
 #include <siri/siri.h>
 #include <siri/optimize.h>
-#include <qpack/qpack.h>
+#include <qpextra/qpextra.h>
 
 #define INITSYNC_SLEEP 100          // 100 milliseconds * active tasks
 #define INITSYNC_TIMEOUT 120000     // 2 minutes

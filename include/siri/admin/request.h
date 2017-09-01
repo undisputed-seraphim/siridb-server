@@ -10,8 +10,8 @@
  *
  */
 #pragma once
-#include <qpack/qpack.h>
 #include <siri/net/protocol.h>
+#include "../../qpextra/qpack.h"
 
 typedef enum
 {

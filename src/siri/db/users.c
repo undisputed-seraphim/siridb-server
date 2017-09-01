@@ -1,3 +1,4 @@
+
 /*
  * users.c - contains functions for a SiriDB database members.
  *
@@ -14,7 +15,7 @@
 #endif
 #include <assert.h>
 #include <logger/logger.h>
-#include <qpack/qpack.h>
+#include <qpextra/qpextra.h>
 #include <siri/db/query.h>
 #include <siri/db/users.h>
 #include <siri/err.h>

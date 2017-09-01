@@ -13,7 +13,7 @@
 
 #include <siri/grammar/gramp.h>
 #include <siri/db/db.h>
-#include <qpack/qpack.h>
+#include "../../qpextra/qpack.h"
 
 struct siridb_s;
 struct qp_packer_s;

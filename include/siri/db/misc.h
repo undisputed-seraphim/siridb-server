@@ -11,7 +11,7 @@
  */
 #pragma once
 
-#include <qpack/qpack.h>
 #include <inttypes.h>
+#include "../../qpextra/qpack.h"
 
 qp_unpacker_t * siridb_misc_open_schema_file(uint8_t schema, const char * fn);

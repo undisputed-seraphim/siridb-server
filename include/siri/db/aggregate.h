@@ -15,7 +15,7 @@
 #include <siri/grammar/gramp.h>
 #include <slist/slist.h>
 #include <cexpr/cexpr.h>
-#include <qpack/qpack.h>
+#include "../../qpextra/qpack.h"
 
 typedef struct siridb_point_s siridb_point_t;
 typedef struct siridb_points_s siridb_points_t;

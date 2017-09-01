@@ -12,8 +12,8 @@
 #pragma once
 
 #include <inttypes.h>
-#include <qpack/qpack.h>
 #include <uv.h>
+#include "../../qpextra/qpack.h"
 
 typedef struct sirinet_pkg_s
 {

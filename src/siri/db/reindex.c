@@ -1,3 +1,4 @@
+
 /*
  * reindex.c - SiriDB Re-index.
  *
@@ -27,7 +28,7 @@
 #endif
 #include <assert.h>
 #include <logger/logger.h>
-#include <qpack/qpack.h>
+#include <qpextra/qpack.h>
 #include <siri/db/db.h>
 #include <siri/db/reindex.h>
 #include <siri/db/server.h>

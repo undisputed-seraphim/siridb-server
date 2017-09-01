@@ -10,8 +10,8 @@
  *
  */
 #pragma once
-#include <qpack/qpack.h>
 #include <siri/siri.h>
+#include "../../qpextra/qpack.h"
 
 typedef struct siri_s siri_t;
 

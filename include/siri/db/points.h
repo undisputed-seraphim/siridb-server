@@ -12,8 +12,8 @@
 #pragma once
 #include <stdlib.h>
 #include <inttypes.h>
-#include <qpack/qpack.h>
 #include <slist/slist.h>
+#include "../../qpextra/qpack.h"
 
 typedef enum
 {

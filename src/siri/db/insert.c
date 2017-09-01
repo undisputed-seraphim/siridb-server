@@ -11,7 +11,7 @@
  */
 #include <assert.h>
 #include <logger/logger.h>
-#include <qpack/qpack.h>
+#include <qpextra/qpack.h>
 #include <siri/async.h>
 #include <siri/db/forward.h>
 #include <siri/db/insert.h>

@@ -13,7 +13,7 @@
 #include <llist/llist.h>
 #include <logger/logger.h>
 #include <procinfo/procinfo.h>
-#include <qpack/qpack.h>
+#include <qpextra/qpack.h>
 #include <siri/db/db.h>
 #include <siri/db/query.h>
 #include <siri/db/server.h>

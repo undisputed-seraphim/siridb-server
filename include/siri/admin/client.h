@@ -13,9 +13,9 @@
 
 #include <inttypes.h>
 #include <uv.h>
-#include <qpack/qpack.h>
 #include <siri/net/pkg.h>
 #include <uuid/uuid.h>
+#include "../../qpextra/qpack.h"
 
 typedef struct siri_admin_client_s
 {

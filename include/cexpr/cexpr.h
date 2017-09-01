@@ -11,8 +11,8 @@
  */
 #pragma once
 #include <inttypes.h>
-#include <qpack/qpack.h>
 #include <cleri/cleri.h>
+#include "../qpextra/qpack.h"
 
 #define CEXPR_MAX_CURLY_DEPTH 6
 

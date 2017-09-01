@@ -16,7 +16,6 @@
 #include <time.h>
 #include <assert.h>
 #include <stdlib.h>
-#include <qpack/qpack.h>
 #include <motd/motd.h>
 #include <cleri/cleri.h>
 #include <ctree/ctree.h>
@@ -24,6 +23,7 @@
 #include <imap/imap.h>
 #include <iso8601/iso8601.h>
 #include <expr/expr.h>
+#include <qpextra/qpextra.h>
 #include <siri/grammar/grammar.h>
 #include <siri/grammar/gramp.h>
 #include <siri/db/aggregate.h>

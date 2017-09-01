@@ -1,3 +1,4 @@
+
 /*
  * qpack.c - efficient binary serialization format
  *
@@ -12,7 +13,7 @@
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
-#include <qpack/qpack.h>
+#include "../../include/qpextra/qpextra.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>

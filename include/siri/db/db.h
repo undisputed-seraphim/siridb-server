@@ -14,7 +14,6 @@
 #include <siri/err.h>
 #include <siri/db/time.h>
 #include <siri/db/user.h>
-#include <qpack/qpack.h>
 #include <siri/db/server.h>
 #include <siri/db/pools.h>
 #include <ctree/ctree.h>
@@ -28,6 +27,7 @@
 #include <siri/db/replicate.h>
 #include <siri/db/reindex.h>
 #include <siri/db/groups.h>
+#include "../../qpextra/qpextra.h"
 
 #define SIRIDB_MAX_SIZE_ERR_MSG 1024
 #define SIRIDB_MAX_DBNAME_LEN 256  // 255 + NULL

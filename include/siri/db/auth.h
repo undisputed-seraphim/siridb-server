@@ -13,8 +13,8 @@
 
 #include <stddef.h>
 #include <siri/net/clserver.h>
-#include <qpack/qpack.h>
 #include <siri/net/protocol.h>
+#include "../../qpextra/qpack.h"
 
 cproto_server_t siridb_auth_user_request(
         uv_stream_t * client,

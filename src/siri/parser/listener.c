@@ -14,7 +14,7 @@
 #include <inttypes.h>
 #include <logger/logger.h>
 #include <math.h>
-#include <qpack/qpack.h>
+#include <qpextra/qpextra.h>
 #include <siri/async.h>
 #include <siri/db/aggregate.h>
 #include <siri/db/group.h>

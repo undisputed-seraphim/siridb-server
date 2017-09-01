@@ -16,8 +16,8 @@
 #include <siri/db/points.h>
 #include <siri/db/pcache.h>
 #include <siri/db/buffer.h>
-#include <qpack/qpack.h>
 #include <cexpr/cexpr.h>
+#include "../../qpextra/qpextra.h"
 
 typedef struct siridb_s siridb_t;
 typedef struct siridb_buffer_s siridb_buffer_t;

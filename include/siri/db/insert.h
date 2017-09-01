@@ -12,10 +12,10 @@
 #pragma once
 
 #include <siri/db/db.h>
-#include <qpack/qpack.h>
 #include <siri/db/forward.h>
 #include <uv.h>
 #include <siri/db/pcache.h>
+#include "../../qpextra/qpack.h"
 
 #define INSERT_FLAG_TEST 1
 #define INSERT_FLAG_TESTED 2

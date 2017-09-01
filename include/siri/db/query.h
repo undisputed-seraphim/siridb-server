@@ -32,7 +32,7 @@ typedef enum
 #include <inttypes.h>
 #include <sys/time.h>
 #include <cleri/cleri.h>
-#include <qpack/qpack.h>
+#include "../../qpextra/qpack.h"
 #include <siri/db/time.h>
 #include <siri/db/nodes.h>
 #include <siri/db/series.h>
