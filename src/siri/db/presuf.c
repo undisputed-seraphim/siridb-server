@@ -63,46 +63,44 @@ siridb_presuf_t * siridb_presuf_add(
         siridb_presuf_t ** presuf,
         cleri_node_t * node)
 {
-    cleri_children_t * children = node->children->next;
+    cleri_children_t * children = node->children;
     cleri_children_t * ps_children;
 
     siridb_presuf_t * nps = PRESUF_add(presuf);
     if (nps != NULL)
     {
-        while (children != NULL)
+        for (uint32_t i = 1; i < children->n; i++)
         {
-            ps_children = children->node->children->node->children;
-            switch (ps_children->node->cl_obj->gid)
+            ps_children = children->node[i]->children->node[0]->children;
+            switch (ps_children->node[0]->cl_obj->gid)
             {
             case CLERI_GID_K_PREFIX:
-                nps->prefix =
-                        (char *) malloc(ps_children->next->node->len + 1);
+                nps->prefix = (char *) malloc(ps_children->node[1]->len + 1);
                 if (nps->prefix != NULL)
                 {
                     /* not critical if suffix is still NULL */
                     nps->len += strx_extract_string(
                             nps->prefix,
-                            ps_children->next->node->str,
-                            ps_children->next->node->len);
+                            ps_children->node[1]->str,
+                            ps_children->node[1]->len);
                 }
                 break;
             case CLERI_GID_K_SUFFIX:
                 nps->suffix =
-                        (char *) malloc(ps_children->next->node->len + 1);
+                        (char *) malloc(ps_children->node[1]->len + 1);
                 if (nps->suffix != NULL)
                 {
                     /* not critical if suffix is still NULL */
                     nps->len += strx_extract_string(
                             nps->suffix,
-                            ps_children->next->node->str,
-                            ps_children->next->node->len);
+                            ps_children->node[1]->str,
+                            ps_children->node[1]->len);
                 }
                 break;
             default:
                 assert (0);
                 break;
             }
-            children = children->next;
         }
     }
     return nps;

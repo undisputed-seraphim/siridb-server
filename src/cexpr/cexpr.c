@@ -548,12 +548,10 @@ static cexpr_t * CEXPR_walk_node(
         break;
     }
 
-    cleri_children_t * current = node->children;
-
-    while (current != NULL && current->node != NULL)
+    for (uint32_t i = 0; i < node->children->n; i++)
     {
         cexpr = CEXPR_walk_node(
-                current->node,
+                node->children->node[i],
                 cexpr,
                 list,
                 condition,
@@ -562,7 +560,6 @@ static cexpr_t * CEXPR_walk_node(
         {
             return NULL;
         }
-        current = current->next;
     }
 
     return cexpr;

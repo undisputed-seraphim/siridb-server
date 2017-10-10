@@ -177,6 +177,7 @@ void siridb_init_aggregates(void)
  */
 slist_t * siridb_aggregate_list(cleri_children_t * children, char * err_msg)
 {
+    cleri_node_t * nd;
     uint32_t gid;
     siridb_aggr_t * aggr;
     slist_t * slist = slist_new(SLIST_DEFAULT_SIZE);
@@ -186,17 +187,19 @@ slist_t * siridb_aggregate_list(cleri_children_t * children, char * err_msg)
         return NULL;
     }
 
-    while (1)
+    for (uint32_t i = 0; i < children->n; i += 2)
+
     {
-        gid = children->node->children->node->cl_obj->gid;
+        nd = children->node[i];
+        gid = nd->children->node[0]->cl_obj->gid;
 
         switch (gid)
         {
         case CLERI_GID_F_LIMIT:
             AGGR_NEW
             {
-                int64_t limit = children->node->children->node->
-                    children->next->next->node->result;
+                int64_t limit = nd->children->node[0]->
+                    children->node[2]->result;
 
                 if (limit <= 0)
                 {
@@ -210,9 +213,8 @@ slist_t * siridb_aggregate_list(cleri_children_t * children, char * err_msg)
 
                 aggr->limit = limit;
 
-                gid = children->node->children->node->children->next->
-                        next->next->next->node->children->node->
-                        cl_obj->gid;
+                gid = nd->children->node[0]->children->
+                        node[4]->children->node[0]->cl_obj->gid;
 
                 switch (gid)
                 {
@@ -270,23 +272,19 @@ slist_t * siridb_aggregate_list(cleri_children_t * children, char * err_msg)
             AGGR_NEW
             {
                 cleri_node_t * onode;
-                if (    children->node->children->node->children->
-                        next->next->next->next == NULL)
+                if (nd->children->node[0]->children->n < 5)
                 {
                     aggr->filter_opr = CEXPR_EQ;
-                    onode = children->node->children->node->
-                            children->next->next->node->
-                            children->node;
+                    onode = nd->children->node[0]->
+                            children->node[2]->children->node[0];
                 }
                 else
                 {
                     aggr->filter_opr = cexpr_operator_fn(
-                            children->node->children->node->
-                            children->next->next->node->
-                            children->node);
-                    onode = children->node->children->node->
-                            children->next->next->next->node->
-                            children->node;
+                            nd->children->node[0]->
+                            children->node[2]->children->node[0]);
+                    onode = nd->children->node[0]->
+                            children->node[3]->children->node[0];
                 }
                 if (AGGREGATE_init_filter(aggr, onode, err_msg))
                 {
@@ -303,14 +301,14 @@ slist_t * siridb_aggregate_list(cleri_children_t * children, char * err_msg)
         case CLERI_GID_F_DERIVATIVE:
             AGGR_NEW
             {
-                cleri_node_t * dlist = children->node->children->
-                        node->children->next->next->node;
+                cleri_node_t * dlist = nd->children->
+                        node[0]->children->node[2];
 
-                if (dlist->children->node != NULL)
+                if (dlist->children->n)
                 {
                     /* result is at least positive, checked earlier */
                     aggr->timespan =
-                            (double) dlist->children->node->result;
+                            (double) dlist->children->node[0]->result;
 
                     if (!aggr->timespan)
                     {
@@ -322,11 +320,10 @@ slist_t * siridb_aggregate_list(cleri_children_t * children, char * err_msg)
                         return NULL;
                     }
 
-                    if (dlist->children->next != NULL)
+                    if (dlist->children->n > 2)
                     {
                         /* result is always positive */
-                        aggr->group_by = dlist->children->next->next->
-                                node->result;
+                        aggr->group_by = dlist->children->node[2]->result;
 
                         if (!aggr->group_by)
                         {
@@ -349,13 +346,11 @@ slist_t * siridb_aggregate_list(cleri_children_t * children, char * err_msg)
 
         case CLERI_GID_F_DIFFERENCE:
             AGGR_NEW
-            if (children->node->children->node->children->
-                        next->next->next != NULL)
+            if (nd->children->node[0]->children->n > 3)
             {
                 /* result is always positive, checked earlier */
-                aggr->group_by = children->node->children->node->
-                        children->next->next->node->children->
-                        node->result;
+                aggr->group_by = nd->children->node[0]->
+                        children->node[2]->children->node[0]->result;
 
                 if (!aggr->group_by)
                 {
@@ -383,8 +378,8 @@ slist_t * siridb_aggregate_list(cleri_children_t * children, char * err_msg)
         case CLERI_GID_F_SUM:
         case CLERI_GID_F_VARIANCE:
             AGGR_NEW
-            aggr->group_by = children->node->children->node->children->
-                    next->next->node->result;
+            aggr->group_by = nd->children->node[0]->children->
+                    node[2]->result;
 
             if (!aggr->group_by)
             {
@@ -407,13 +402,6 @@ slist_t * siridb_aggregate_list(cleri_children_t * children, char * err_msg)
             assert (0);
             break;
         }
-
-        if (children->next == NULL)
-        {
-            break;
-        }
-
-        children = children->next->next;
     }
 
     return slist;

@@ -431,6 +431,13 @@ static void QUERY_send_invalid_error(uv_async_t * handle)
     const char * expect;
     cleri_t * cl_obj;
 
+    if (query->pr->expect == NULL)
+    {
+        sprintf(query->err_msg, "Query error at position %zd.",
+                    query->pr->pos);
+        goto final;
+    }
+
     /* start building the error message */
     len = snprintf(query->err_msg,
             SIRIDB_MAX_SIZE_ERR_MSG,
@@ -440,9 +447,9 @@ static void QUERY_send_invalid_error(uv_async_t * handle)
     /* expand the error message with suggestions. we try to add nice names
      * for regular expressions etc.
      */
-    while (query->pr->expect != NULL)
+    for (uint32_t i = 0; i < query->pr->expect->n; i++)
     {
-        cl_obj = query->pr->expect->cl_obj;
+        cl_obj = query->pr->expect->cl_obj[i];
         if (cl_obj->tp == CLERI_TP_END_OF_STATEMENT)
         {
             expect = "end_of_statement";
@@ -481,7 +488,6 @@ static void QUERY_send_invalid_error(uv_async_t * handle)
             /* the best result we get is to handle all, but it will not break
              * in case we did not specify some elements.
              */
-            query->pr->expect = query->pr->expect->next;
             continue;
         }
 
@@ -501,7 +507,7 @@ static void QUERY_send_invalid_error(uv_async_t * handle)
                     "%s",
                     expect);
         }
-        else if (query->pr->expect->next == NULL)
+        else if (query->pr->expect->n == i - 1)
         {
             len += snprintf(query->err_msg + len,
                     SIRIDB_MAX_SIZE_ERR_MSG - len,
@@ -515,10 +521,9 @@ static void QUERY_send_invalid_error(uv_async_t * handle)
                     ", %s",
                     expect);
         }
-
-        query->pr->expect = query->pr->expect->next;
     }
 
+final:
     siridb_query_send_error(handle, CPROTO_ERR_QUERY);
 }
 
@@ -592,7 +597,7 @@ static void QUERY_parse(uv_async_t * handle)
     }
 
     if ((rc = QUERY_walk(
-            query->pr->tree->children->node,
+            query->pr->tree->children->node[0],
             walker)))
     {
         switch (rc)
@@ -653,7 +658,7 @@ static int QUERY_to_packer(qp_packer_t * packer, siridb_query_t * query)
 
         rc = QUERY_rebuild(
                 ((sirinet_socket_t *) query->client->data)->siridb,
-                query->pr->tree->children->node,
+                query->pr->tree->children->node[0],
                 buffer,
                 &size,
                 packer->alloc_size);
@@ -710,7 +715,7 @@ static int QUERY_walk(cleri_node_t * node, siridb_walker_t * walker)
 
         /* we can have nested integer and time expressions */
         if ((rc = QUERY_time_expr(
-                node->children->node,
+                node->children->node[0],
                 walker,
                 buffer,
                 &size)))
@@ -739,7 +744,7 @@ static int QUERY_walk(cleri_node_t * node, siridb_walker_t * walker)
         size_t size = EXPR_MAX_SIZE;
 
         if ((rc = QUERY_int_expr(
-                node->children->node,
+                node->children->node[0],
                 buffer,
                 &size)))
         {
@@ -758,21 +763,21 @@ static int QUERY_walk(cleri_node_t * node, siridb_walker_t * walker)
     else
     {
         current = node->children;
-        while (current != NULL && current->node != NULL)
+        for (uint32_t i = 0; current && i < current->n; i++)
         {
             /*
              * We should not simple walk because THIS has no
              * cl_obj->cl_obj and THIS is save to skip.
              */
-            while (current->node->cl_obj->tp == CLERI_TP_THIS)
+            while (current->node[i]->cl_obj->tp == CLERI_TP_THIS)
             {
-                current = current->node->children;
+                current = current->node[i]->children;
+                i = 0;
             }
-            if ((rc = QUERY_walk(current->node, walker)))
+            if ((rc = QUERY_walk(current->node[i], walker)))
             {
                 return rc;
             }
-            current = current->next;
         }
     }
 
@@ -881,17 +886,16 @@ static int QUERY_time_expr(
             cleri_children_t * current;
 
             current = node->children;
-            while (current != NULL && current->node != NULL)
+            for (uint32_t i = 0; i < current->n; i++)
             {
                 if ((rc = QUERY_time_expr(
-                        current->node,
+                        current->node[i],
                         walker,
                         buf,
                         size)))
                 {
                     return rc;
                 }
-                current = current->next;
             }
         }
     }
@@ -925,16 +929,15 @@ static int QUERY_int_expr(cleri_node_t * node, char * buf, size_t * size)
             cleri_children_t * current;
 
             current = node->children;
-            while (current != NULL && current->node != NULL)
+            for (uint32_t i = 0; i < current->n; i++)
             {
                 if ((rc = QUERY_int_expr(
-                        current->node,
+                        current->node[i],
                         buf,
                         size)))
                 {
                     return rc;
                 }
-                current = current->next;
             }
         }
     }
@@ -975,7 +978,7 @@ static int QUERY_rebuild(
             {
                 siridb_server_t * server = siridb_server_from_node(
                         siridb,
-                        node->children->node,
+                        node->children->node[0],
                         NULL);
                 if (server != NULL)
                 {
@@ -1017,21 +1020,17 @@ static int QUERY_rebuild(
     default:
         {
             int rc;
-            cleri_children_t * current;
-
-            current = node->children;
-            while (current != NULL && current->node != NULL)
+            for (uint32_t i = 0; i < node->children->n; i++)
             {
                 if ((rc = QUERY_rebuild(
                         siridb,
-                        current->node,
+                        node->children->node[i],
                         buf,
                         size,
                         max_size)))
                 {
                     return rc;
                 }
-                current = current->next;
             }
         }
     }

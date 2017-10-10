@@ -58,14 +58,11 @@ uint32_t siridb_access_from_children(cleri_children_t * children)
 {
     uint32_t access_bit = 0;
 
-    while (children != NULL)
+    for (uint32_t i = 0; i < children->n; i += 2)
     {
         access_bit |= siridb_access_from_strn(
-                children->node->str,
-                children->node->len);
-        if (children->next == NULL)
-            break;
-        children = children->next->next;
+                children->node[i]->str,
+                children->node[i]->len);
     }
 
     return access_bit;
