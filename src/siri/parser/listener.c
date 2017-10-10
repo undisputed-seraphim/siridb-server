@@ -509,7 +509,7 @@ static void enter_alter_group(uv_async_t * handle)
     MASTER_CHECK_ACCESSIBLE(siridb)
 
     cleri_node_t * group_node =
-                    query->nodes->node->children->next->node;
+                    query->nodes->node->children[1].node;
     siridb_group_t * group;
 
     char name[group_node->len - 1];
@@ -540,7 +540,7 @@ static void enter_alter_server(uv_async_t * handle)
     query_alter_t * q_alter = (query_alter_t *) query->data;
     siridb_server_t * server = siridb_server_from_node(
             siridb,
-            query->nodes->node->children->next->node->children->node,
+            query->nodes->node->children[1].node->children->node,
             query->err_msg);
 
     if (server == NULL)
@@ -603,7 +603,7 @@ static void enter_alter_user(uv_async_t * handle)
     MASTER_CHECK_ACCESSIBLE(siridb)
 
     cleri_node_t * user_node =
-                query->nodes->node->children->next->node;
+                query->nodes->node->children[1].node;
     query_alter_t * q_alter = (query_alter_t *) query->data;
     siridb_user_t * user;
 
@@ -735,7 +735,7 @@ static void enter_grant_user(uv_async_t * handle)
     MASTER_CHECK_ACCESSIBLE(siridb)
 
     cleri_node_t * user_node =
-                query->nodes->node->children->next->node;
+                query->nodes->node->children[1].node;
     siridb_user_t * user;
     char username[user_node->len - 1];
     strx_extract_string(username, user_node->str, user_node->len);
@@ -862,7 +862,7 @@ static void enter_limit_expr(uv_async_t * handle)
     siridb_query_t * query = (siridb_query_t *) handle->data;
     siridb_t * siridb = ((sirinet_socket_t *) query->client->data)->siridb;
     query_list_t * qlist = (query_list_t *) query->data;
-    int64_t limit = query->nodes->node->children->next->node->result;
+    int64_t limit = query->nodes->node->children[1].node->result;
 
     if (limit <= 0 || limit > siridb->list_limit)
     {
@@ -920,7 +920,7 @@ static void enter_merge_as(uv_async_t * handle)
 {
     siridb_query_t * query = (siridb_query_t *) handle->data;
     query_select_t * q_select = (query_select_t *) query->data;
-    cleri_node_t * node = query->nodes->node->children->next->next->node;
+    cleri_node_t * node = query->nodes->node->children[2].node;
     q_select->merge_as = (char *) malloc(node->len - 1);
 
     if (q_select->merge_as == NULL)
@@ -930,11 +930,11 @@ static void enter_merge_as(uv_async_t * handle)
 
     strx_extract_string(q_select->merge_as, node->str, node->len);
 
-    if (IS_MASTER && query->nodes->node->children->next->next->next != NULL)
+    if (IS_MASTER && query->nodes->node->children->n > 2)
     {
         q_select->mlist = siridb_aggregate_list(
-                query->nodes->node->children->next->next->next->node->
-                    children->node->children->next->node->children,
+                query->nodes->node->children[3].node->
+                    children->node->children[1].node->children,
                 query->err_msg);
 
         if (q_select->mlist == NULL)
@@ -956,7 +956,7 @@ static void enter_revoke_user(uv_async_t * handle)
     MASTER_CHECK_ACCESSIBLE(siridb)
 
     cleri_node_t * user_node =
-                query->nodes->node->children->next->node;
+                query->nodes->node->children[1].node;
     siridb_user_t * user;
     char username[user_node->len - 1];
     strx_extract_string(username, user_node->str, user_node->len);
@@ -996,7 +996,6 @@ static void enter_select_stmt(uv_async_t * handle)
     siridb_query_t * query = (siridb_query_t *) handle->data;
     siridb_t * siridb = ((sirinet_socket_t *) query->client->data)->siridb;
     query_select_t * q_select;
-    cleri_children_t * child;
 
     SIRIPARSER_MASTER_CHECK_ACCESS(SIRIDB_ACCESS_SELECT)
     MASTER_CHECK_ACCESSIBLE(siridb)
@@ -1018,12 +1017,8 @@ static void enter_select_stmt(uv_async_t * handle)
                     NULL : imap_new();
 
     /* child is always the ',' and child->next the node */
-    child = query->nodes->node->children->next->node->children->next;
-    while (child != NULL)
-    {
-        q_select->nselects++;
-        child = child->next->next;
-    }
+    q_select->nselects =
+            (query->nodes->node->children[1].node->children->n + 1) / 2;
 
     if (q_select->nselects > 1)
     {
@@ -1049,7 +1044,7 @@ static void enter_set_expression(uv_async_t * handle)
 {
     siridb_query_t * query = (siridb_query_t *) handle->data;
     siridb_t * siridb = ((sirinet_socket_t *) query->client->data)->siridb;
-    cleri_node_t * node = query->nodes->node->children->next->next->node;
+    cleri_node_t * node = query->nodes->node->children[2].node;
     query_alter_t * q_alter = (query_alter_t *) query->data;
 
     if (siridb_group_update_expression(
@@ -1072,7 +1067,7 @@ static void enter_set_ignore_threshold(uv_async_t * handle)
     siridb_query_t * query = (siridb_query_t *) handle->data;
     query_drop_t * q_drop = (query_drop_t *) query->data;
 
-    if (    query->nodes->node->children->next->next->node->children->node->
+    if (    query->nodes->node->children[2].node->children->node->
             cl_obj->gid == CLERI_GID_K_TRUE)
     {
         q_drop->flags |= QUERIES_IGNORE_DROP_THRESHOLD;
@@ -1086,7 +1081,7 @@ static void enter_set_name(uv_async_t * handle)
     siridb_query_t * query = (siridb_query_t *) handle->data;
     siridb_t * siridb = ((sirinet_socket_t *) query->client->data)->siridb;
     cleri_node_t * name_node =
-                query->nodes->node->children->next->next->node;
+                query->nodes->node->children[2].node;
 
     char name[name_node->len - 1];
     strx_extract_string(name, name_node->str, name_node->len);
@@ -1131,8 +1126,7 @@ static void enter_set_password(uv_async_t * handle)
     siridb_query_t * query = (siridb_query_t *) handle->data;
     siridb_user_t * user = ((query_alter_t *) query->data)->via.user;
 
-    cleri_node_t * pw_node =
-            query->nodes->node->children->next->next->node;
+    cleri_node_t * pw_node = query->nodes->node->children[2].node;
 
     char password[pw_node->len - 1];
     strx_extract_string(password, pw_node->str, pw_node->len);
@@ -1418,7 +1412,7 @@ static void enter_where_xxx(uv_async_t * handle)
 {
     siridb_query_t * query = (siridb_query_t *) handle->data;
     cexpr_t * cexpr =
-            cexpr_from_node(query->nodes->node->children->next->node);
+            cexpr_from_node(query->nodes->node->children[1].node);
 
     if (cexpr == NULL)
     {
@@ -1438,30 +1432,19 @@ static void enter_xxx_columns(uv_async_t * handle)
     cleri_children_t * columns = query->nodes->node->children;
     query_list_t * qlist = (query_list_t *) query->data;
 
-    qlist->props = slist_new(DEFAULT_ALLOC_COLUMNS);
+    qlist->props = slist_new((columns->n + 1) / 2);
 
     if (qlist->props == NULL)
     {
         MEM_ERR_RET
     }
 
-    while (1)
+    for (uint32_t i = 0; i < columns->n; i += 2)
     {
-        qp_add_raw(query->packer, columns->node->str, columns->node->len);
-
-        if (slist_append_safe(
+        qp_add_raw(query->packer, columns[i].node->str, columns[i].node->len);
+        slist_append(
                 &qlist->props,
-                &columns->node->children->node->cl_obj->gid))
-        {
-            MEM_ERR_RET
-        }
-
-        if (columns->next == NULL)
-        {
-            break;
-        }
-
-        columns = columns->next->next;
+                &columns[i].node->children->node->cl_obj->gid);
     }
 
     SIRIPARSER_ASYNC_NEXT_NODE
@@ -1475,7 +1458,7 @@ static void exit_after_expr(uv_async_t * handle)
 {
     siridb_query_t * query = (siridb_query_t *) handle->data;
     ((query_select_t *) query->data)->start_ts =
-            (uint64_t *) &query->nodes->node->children->next->node->result;
+            (uint64_t *) &query->nodes->node->children[1].node->result;
 
     SIRIPARSER_NEXT_NODE
 }
