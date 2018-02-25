@@ -69,3 +69,6 @@ grammar/pygrammar/
 
 # Test
 test/testdir
+
+# Build artifacts
+[Bb]uild/
