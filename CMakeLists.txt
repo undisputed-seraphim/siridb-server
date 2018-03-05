@@ -8,7 +8,7 @@ endif()
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 configure_file(
-	"${CMAKE_SOURCE_DIR}/version.h.in"
+	"${CMAKE_MODULE_PATH}/version.h.in"
 	"${CMAKE_SOURCE_DIR}/include/siri/version.h"
 )
 
@@ -17,11 +17,6 @@ find_package(PCRE2 REQUIRED)
 find_package(LibUV REQUIRED)
 find_package(UUID REQUIRED)
 find_package(cleri REQUIRED)
-
-configure_file(
-	"${CMAKE_SOURCE_DIR}/cmake/version.h.in"
-	"${CMAKE_SOURCE_DIR}/include/siri/version.h"
-)
 
 set(siridb-server_src_dir "${CMAKE_SOURCE_DIR}/src")
 file(GLOB_RECURSE siridb-server_src ${siridb-server_src_dir}/*.c)

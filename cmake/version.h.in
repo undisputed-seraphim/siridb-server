@@ -13,7 +13,7 @@
 
 #define SIRIDB_VERSION_MAJOR @siridb-server_VERSION_MAJOR@
 #define SIRIDB_VERSION_MINOR @siridb-server_VERSION_MINOR@
-#define SIRIDB_VERSION_PATCH @siridb-server_VERSION_MPATCH@
+#define SIRIDB_VERSION_PATCH @siridb-server_VERSION_PATCH@
 
 #define SIRIDB_VERSION "@siridb-server_VERSION@"
 
